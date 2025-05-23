@@ -7,9 +7,9 @@
 ## 📷 أمثلة من الصور:
 
 <p align="center">
-  <img alt="صورة 1" src="fKDqFcW.jpg" style="height: 100px; margin: 15px; border-radius: 50%;">
-  <img alt="صورة 2" src="NAy7L2L.png" style="height: 100px; margin: 15px; border-radius: 50%;">
-  <img alt="صورة 3" src="qCP5apy.jpg" style="height: 100px; margin: 15px; border-radius: 50%;">
+  <img alt="صورة 1" src="0LJd3mz.jpg" style="height: 100px; margin: 15px; border-radius: 50%;">
+  <img alt="صورة 2" src="00ufnhN.jpg" style="height: 100px; margin: 15px; border-radius: 50%;">
+  <img alt="صورة 3" src="1cqgNKM.jpg" style="height: 100px; margin: 15px; border-radius: 50%;">
 </p>
 
 ---
