@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>الأسطورة</title>
+<title>معرض الصور</title>
 <link rel="icon" href="54DNXLH.png" type="image/png" />
 <style>
   :root {
@@ -255,8 +255,12 @@
 <body>
 <header>
   <h1>معرض الصور</h1>
-  <button id="toggleThemeBtn" aria-label="تبديل الوضع بين فاتح وغامق" title="تبديل الوضع بين فاتح وغامق" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🌙</button>
+  <div style="display: flex; gap: 10px;">
+    <button id="refreshPageBtn" aria-label="تحديث الصفحة" title="تحديث الصفحة" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🔄</button>
+    <button id="toggleThemeBtn" aria-label="تبديل الوضع بين فاتح وغامق" title="تبديل الوضع بين فاتح وغامق" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🌙</button>
+  </div>
 </header>
+
 <main>
   <input type="search" id="searchInput" placeholder="ابحث عن صورة..." aria-label="بحث في الصور" />
   <div class="gallery-container" id="gallery">
@@ -413,6 +417,13 @@ toggleThemeBtn.onclick = () => {
     renderGallery();
   })();
 })();
+document.getElementById("refreshPageBtn").onclick = async () => {
+  gallery.innerHTML = `<div class="loading">جاري تحديث الصور...</div>`;
+  images = await fetchImages();
+  renderGallery(searchInput.value.trim());
+};
+
+
 </script>
 
 </body>
