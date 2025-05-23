@@ -249,6 +249,14 @@
     }
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spin-anim {
+  animation: spin 1s linear infinite;
+}
   
 </style>
 </head>
@@ -256,10 +264,11 @@
 <header>
   <h1>معرض الصور</h1>
   <div style="display: flex; gap: 10px;">
-    <button id="refreshPageBtn" aria-label="تحديث الصفحة" title="تحديث الصفحة" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🔄</button>
+    <button id="refreshPageBtn" aria-label="تحديث الصور" title="تحديث الصور" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🔄</button>
     <button id="toggleThemeBtn" aria-label="تبديل الوضع بين فاتح وغامق" title="تبديل الوضع بين فاتح وغامق" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🌙</button>
   </div>
 </header>
+
 
 <main>
   <input type="search" id="searchInput" placeholder="ابحث عن صورة..." aria-label="بحث في الصور" />
@@ -418,10 +427,18 @@ toggleThemeBtn.onclick = () => {
   })();
 })();
 document.getElementById("refreshPageBtn").onclick = async () => {
+  const refreshBtn = document.getElementById("refreshPageBtn");
+  refreshBtn.classList.add("spin-anim");
   gallery.innerHTML = `<div class="loading">جاري تحديث الصور...</div>`;
-  images = await fetchImages();
-  renderGallery(searchInput.value.trim());
+  
+  try {
+    images = await fetchImages();
+    renderGallery(searchInput.value.trim());
+  } finally {
+    refreshBtn.classList.remove("spin-anim");
+  }
 };
+
 
 
 </script>
