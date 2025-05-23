@@ -277,6 +277,7 @@
   </div>
 </main>
 <button class="scroll-top" id="scrollTopBtn" title="الرجوع للأعلى">↑</button>
+<div id="toast" style="position: fixed; bottom: 80px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.4s ease; z-index: 9999; font-size: 15px;"></div>
 
 <script>
 (() => {
@@ -426,18 +427,40 @@ toggleThemeBtn.onclick = () => {
     renderGallery();
   })();
 })();
+
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.opacity = "1";
+  setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2500); // تختفي بعد 2.5 ثانية
+}
+
+
+
 document.getElementById("refreshPageBtn").onclick = async () => {
   const refreshBtn = document.getElementById("refreshPageBtn");
   refreshBtn.classList.add("spin-anim");
+  const originalIcon = refreshBtn.textContent;
+  refreshBtn.textContent = "⏳";
+
   gallery.innerHTML = `<div class="loading">جاري تحديث الصور...</div>`;
   
   try {
     images = await fetchImages();
     renderGallery(searchInput.value.trim());
+    showToast("✅ تم تحديث الصور");
+  } catch {
+    showToast("❌ فشل التحديث");
   } finally {
     refreshBtn.classList.remove("spin-anim");
+    refreshBtn.textContent = originalIcon;
   }
 };
+
+
 
 
 
