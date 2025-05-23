@@ -223,6 +223,38 @@
     color: black;
     transform: scale(1.1);
   }
+  .gallery-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+/* شاشات صغيرة - عرض 4 صور في الصف */
+@media (max-width: 480px) {
+    .gallery-container {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+}
+
+/* شاشات متوسطة - عرض 3 صور في الصف */
+@media (min-width: 481px) and (max-width: 768px) {
+    .gallery-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        padding: 12px;
+    }
+}
+
+/* شاشات أكبر - عرض 5 صور في الصف */
+@media (min-width: 1200px) {
+    .gallery-container {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
 </style>
 </head>
 <body>
