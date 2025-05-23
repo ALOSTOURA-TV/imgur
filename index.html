@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض الصور</title>
+    <link rel="icon" href="https://i.imgur.com/54DNXLH.png" type="image/png">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
+            padding-top: 60px;
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 15px;
+        }
+        
+        .image-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 1px solid #333;
+        }
+        
+        .image-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(153, 0, 0, 0.3);
+        }
+        
+        .image-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .image-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.8));
+            padding: 8px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #990000;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #999;
+            grid-column: 1 / -1;
+        }
+        
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #210f80;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.8;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .scroll-top:hover {
+            background-color: #fbd034;
+            transform: scale(1.1);
+        }
+        
+        .scroll-top::after {
+            content: "↑";
+            color: white;
+            font-size: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-container {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery-container" id="gallery">
+        <div class="loading">جاري تحميل الصور...</div>
+    </div>
+    
+    <div class="scroll-top" id="scrollTop"></div>
+    
+   
+
+<script>
+  const baseURL = "./"; // الصور وملف files.json بنفس المجلد
+  const gallery = document.getElementById("gallery");
+
+  fetch("files.json")
+    .then(res => res.json())
+    .then(images => {
+      gallery.innerHTML = "";
+      images.forEach(name => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const img = document.createElement("img");
+        img.src = baseURL + encodeURIComponent(name);
+        img.alt = name;
+
+        const btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.textContent = "📋 نسخ";
+        btn.onclick = () => {
+          const fullUrl = location.href.replace(/\/[^/]*$/, '/') + encodeURIComponent(name);
+          navigator.clipboard.writeText(fullUrl).then(() => {
+            btn.textContent = "✅ نُسخ!";
+            setTimeout(() => (btn.textContent = "📋 نسخ"), 2000);
+          });
+        };
+
+        card.appendChild(img);
+        card.appendChild(btn);
+        gallery.appendChild(card);
+      });
+    })
+    .catch(err => {
+      gallery.innerHTML = `<p style="color: #999;">❌ فشل تحميل الصور: ${err.message}</p>`;
+    });
+</script>
+
+</body>
+</html>
