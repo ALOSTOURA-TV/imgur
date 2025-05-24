@@ -152,13 +152,10 @@
 
   .btn-container {
   display: flex;
-  flex-wrap: wrap;      /* لف تلقائي */
-  gap: 8px;             /* مسافة بين الأزرار */
-  padding: 5px 8px;
   justify-content: flex-start;
-}
+  }
 
-.btn-copy, .btn-download {
+ .btn-copy, .btn-download {
   flex: 1 1 45%;        /* يأخذ كل زر حوالي 45% عرض الحاوية، يسمح باللف */
   max-width: 100px;     /* حد أقصى لعرض الزر */
   box-sizing: border-box;
@@ -172,20 +169,20 @@
   transition: background-color 0.3s ease;
   user-select: none;
   text-align: center;
-}
-body.light .btn-copy, body.light .btn-download {
+  }
+  body.light .btn-copy, body.light .btn-download {
   background: rgba(255,255,255,0.7);
   color: #222;
-}
+  }
 
-.btn-copy:hover {
+  .btn-copy:hover {
   background-color: #990000;
   color: white;
-}
-.btn-download:hover {
+  }
+  .btn-download:hover {
   background-color: #006699;
   color: white;
-}
+  }
 
 
 
@@ -248,9 +245,6 @@ body.light .btn-copy, body.light .btn-download {
     }
 }
 
-.image-info {
-  display: none !important;
-}
 
 
 </style>
