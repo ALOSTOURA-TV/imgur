@@ -233,7 +233,7 @@
     }
 }
 
-/* شاشات متوسطة - عرض 4 صور في الصف */
+/* شاشات متوسطة - عرض 3 صور في الصف */
 @media (min-width: 481px) and (max-width: 768px) {
     .gallery-container {
         grid-template-columns: repeat(4, 1fr);
@@ -242,12 +242,13 @@
     }
 }
 
-/* شاشات أكبر - عرض 8 صور في الصف */
+/* شاشات أكبر - عرض 5 صور في الصف */
 @media (min-width: 1200px) {
     .gallery-container {
         grid-template-columns: repeat(8, 1fr);
     }
 }
+
 /* شاشات كبيرة - لابتوب أو ديسكتوب عالي الدقة */
 @media (min-width: 1600px) {
     .gallery-container {
@@ -257,20 +258,29 @@
  /* شاشات التلفزيون الكبيرة - 4K أو أكبر */
 @media (min-width: 2560px) {
     .gallery-container {
-        grid-template-columns: repeat(15, 1fr);
+        grid-template-columns: repeat(15, 1fr); /* عرض 12 صورة في الصف */
     }
-} 
- 
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spin-anim {
+  animation: spin 1s linear infinite;
+}
+
 </style>
 </head>
 <body>
 <header>
   <h1>معرض الصور</h1>
   <div style="display: flex; gap: 10px;">
-    
+    <button id="refreshPageBtn" aria-label="تحديث الصور" title="تحديث الصور" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🔄</button>
     <button id="toggleThemeBtn" aria-label="تبديل الوضع بين فاتح وغامق" title="تبديل الوضع بين فاتح وغامق" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🌙</button>
   </div>
 </header>
+
 
 
 <main>
@@ -280,6 +290,7 @@
   </div>
 </main>
 <button class="scroll-top" id="scrollTopBtn" title="الرجوع للأعلى">↑</button>
+<div id="toast" style="position: fixed; bottom: 80px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.4s ease; z-index: 9999; font-size: 15px;"></div>
 
 <script>
 (() => {
@@ -430,7 +441,34 @@ toggleThemeBtn.onclick = () => {
   })();
 })();
 
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.opacity = "1";
+  setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2500); // تختفي بعد 2.5 ثانية
+}
 
+document.getElementById("refreshPageBtn").onclick = async () => {
+  const refreshBtn = document.getElementById("refreshPageBtn");
+  refreshBtn.classList.add("spin-anim");
+  const originalIcon = refreshBtn.textContent;
+  refreshBtn.textContent = "⏳";
+
+  gallery.innerHTML = `<div class="loading">جاري تحديث الصور...</div>`;
+  
+  try {
+    images = await fetchImages();
+    renderGallery(searchInput.value.trim());
+    showToast("✅ تم تحديث الصور");
+  } catch {
+    showToast("❌ فشل التحديث");
+  } finally {
+    refreshBtn.classList.remove("spin-anim");
+    refreshBtn.textContent = originalIcon;
+  }
+};
 
 
 
