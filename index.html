@@ -248,7 +248,18 @@
         grid-template-columns: repeat(8, 1fr);
     }
 }
-
+/* شاشات كبيرة - لابتوب أو ديسكتوب عالي الدقة */
+@media (min-width: 1600px) {
+    .gallery-container {
+        grid-template-columns: repeat(10, 1fr);
+    }
+}
+ /* شاشات التلفزيون الكبيرة - 4K أو أكبر */
+@media (min-width: 2560px) {
+    .gallery-container {
+        grid-template-columns: repeat(15, 1fr);
+    }
+} 
  
 </style>
 </head>
