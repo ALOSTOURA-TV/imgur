@@ -17,7 +17,7 @@
 ## 🔗 GitHub Pages
 
 تقدر تشوف الصور مباشر من هنا :  
-➡️ [https://alostoura-tv.github.io/imgur](https://alostoura-tv.github.io/imgur)
+⬅️💻 [https://alostoura-tv.github.io/imgur](https://alostoura-tv.github.io/imgur)
 
 ---
 
