@@ -151,22 +151,24 @@
   }
 
   .btn-copy, .btn-download {
-    position: absolute;
-    top: 8px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    font-size: 13px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    user-select: none;
-  }
-  body.light .btn-copy, body.light .btn-download {
-    background: rgba(255,255,255,0.7);
-    color: #222;
-  }
+  position: static;  /* أزل absolute */
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 13px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+  margin: 5px 5px 10px 0; /* مسافة بين الأزرار والأسفل */
+  display: inline-block;
+}
+body.light .btn-copy, body.light .btn-download {
+  background: rgba(255,255,255,0.7);
+  color: #222;
+}
+
   .btn-copy:hover {
     background-color: #990000;
     color: white;
@@ -309,42 +311,52 @@
 
   // إنشاء بطاقة الصورة
   function createImageCard(imgName) {
-    const card = document.createElement("div");
-    card.className = "image-card";
+  const card = document.createElement("div");
+  card.className = "image-card";
 
-    const img = document.createElement("img");
-    img.src = baseURL + encodeURIComponent(imgName);
-    img.alt = imgName.replace(/\.[^/.]+$/, "");
-    img.loading = "lazy";
-    card.appendChild(img);
+  const img = document.createElement("img");
+  img.src = baseURL + encodeURIComponent(imgName);
+  img.alt = imgName.replace(/\.[^/.]+$/, "");
+  img.loading = "lazy";
+  card.appendChild(img);
 
-    const copyBtn = document.createElement("button");
-    copyBtn.className = "btn-copy";
-    copyBtn.textContent = "📋 نسخ";
-    copyBtn.title = "نسخ الرابط المباشر للصورة";
-    copyBtn.onclick = (e) => {
-      e.stopPropagation();
-      copyToClipboard(baseURL + encodeURIComponent(imgName), copyBtn);
-    };
-    card.appendChild(copyBtn);
+  // حاوية الأزرار
+  const btnContainer = document.createElement("div");
+  btnContainer.style.padding = "5px 8px";
+  btnContainer.style.display = "flex";
+  btnContainer.style.justifyContent = "flex-start";
+  btnContainer.style.gap = "10px";
 
-    const downloadBtn = document.createElement("button");
-    downloadBtn.className = "btn-download";
-    downloadBtn.textContent = "⬇ تحميل";
-    downloadBtn.title = "تحميل الصورة";
-    downloadBtn.onclick = (e) => {
-      e.stopPropagation();
-      downloadImage(baseURL + encodeURIComponent(imgName), imgName);
-    };
-    card.appendChild(downloadBtn);
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "btn-copy";
+  copyBtn.textContent = "📋 نسخ";
+  copyBtn.title = "نسخ الرابط المباشر للصورة";
+  copyBtn.onclick = (e) => {
+    e.stopPropagation();
+    copyToClipboard(baseURL + encodeURIComponent(imgName), copyBtn);
+  };
+  btnContainer.appendChild(copyBtn);
 
-    const info = document.createElement("div");
-    info.className = "image-info";
-    info.textContent = imgName.replace(/\.[^/.]+$/, "");
-    card.appendChild(info);
+  const downloadBtn = document.createElement("button");
+  downloadBtn.className = "btn-download";
+  downloadBtn.textContent = "⬇ تحميل";
+  downloadBtn.title = "تحميل الصورة";
+  downloadBtn.onclick = (e) => {
+    e.stopPropagation();
+    downloadImage(baseURL + encodeURIComponent(imgName), imgName);
+  };
+  btnContainer.appendChild(downloadBtn);
 
-    return card;
-  }
+  card.appendChild(btnContainer);
+
+  const info = document.createElement("div");
+  info.className = "image-info";
+  info.textContent = imgName.replace(/\.[^/.]+$/, "");
+  card.appendChild(info);
+
+  return card;
+}
+
 
   // عرض الصور في المعرض (مع فلتر البحث)
   function renderGallery(filter = "") {
