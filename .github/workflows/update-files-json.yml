@@ -1,0 +1,33 @@
+name: تحديث files.json تلقائيًا
+
+on:
+  push:
+    paths:
+      - 'imgur/**'
+    branches:
+      - main
+
+jobs:
+  update-files-json:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🔄 جلب المستودع
+      uses: actions/checkout@v3
+
+    - name: 🐍 تجهيز Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+
+    - name: ▶️ تنفيذ السكربت
+      run: python imgur/generate_files_json.py
+      working-directory: ./imgur
+
+    - name: 💾 حفظ التغييرات ودفعها
+      run: |
+        git config user.name "GitHub Action"
+        git config user.email "action@github.com"
+        git add imgur/files.json
+        git commit -m "🔄 تحديث files.json تلقائيًا"
+        git push
