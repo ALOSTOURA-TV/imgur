@@ -17,22 +17,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 🔄 جلب المستودع
+    - name: 🔄 Checkout repository
       uses: actions/checkout@v3
 
-    - name: 🐍 إعداد Python
+    - name: 🐍 Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.x
+        python-version: '3.x'
 
-    - name: ▶️ تنفيذ السكربت
-      run: python generate_files_json.py
-      working-directory: ./imgur
+    - name: 📂 List root files before
+      run: ls -l .
 
-    - name: 💾 حفظ التغييرات ودفعها
+    - name: ▶️ Run generate_files_json.py
+      run: |
+        cd imgur
+        python generate_files_json.py
+
+    - name: 📂 List imgur directory after
+      run: ls -l imgur
+
+    - name: 💾 Commit and push updates
       run: |
         git config user.name "GitHub Action"
         git config user.email "action@github.com"
         git add imgur/files.json
-        git commit -m "🔄 تحديث files.json تلقائيًا"
+        git commit -m "🔄 تحديث files.json تلقائيًا" || echo "no changes to commit"
         git push
