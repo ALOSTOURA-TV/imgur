@@ -3,12 +3,7 @@ name: تحديث files.json تلقائيًا
 on:
   push:
     paths:
-      - '*.jpg'
-      - '*.jpeg'
-      - '*.png'
-      - '*.gif'
-      - '*.webp'
-      - '*.bmp'
+      - 'imgur/**'
     branches:
       - main
 
@@ -17,23 +12,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔄 Checkout repository
-        uses: actions/checkout@v3
+    - name: 🔄 Checkout repository
+      uses: actions/checkout@v3
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
-      - name: ▶️ Run generate_files_json.py
-        run: python generate_files_json.py
+    - name: ▶️ Run generate_files_json.py
+      run: |
+        cd imgur
+        python generate_files_json.py
 
-      - name: 💾 Commit and push updates
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          git add files.json
-          git commit -m "🔄 تحديث files.json تلقائيًا" || echo "No changes to commit"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: 💾 Commit changes and push to branch
+      run: |
+        git config user.name "GitHub Action"
+        git config user.email "action@github.com"
+        git add imgur/files.json
+        git commit -m "🔄 تحديث files.json تلقائيًا" || echo "No changes to commit"
+        git push origin HEAD:update-files-json || echo "No changes to push"
+
+    - name: إنشاء Pull Request تلقائي
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "🔄 تحديث files.json تلقائيًا"
+        branch: update-files-json
+        title: "🔄 تحديث files.json تلقائيًا"
+        body: "تحديث تلقائي للملف files.json"
+        labels: auto-update
