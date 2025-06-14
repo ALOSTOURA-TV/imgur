@@ -3,8 +3,12 @@ name: تحديث files.json تلقائيًا
 on:
   push:
     paths:
-   paths:
-  - 'imgur/**'
+      - '*.jpg'
+      - '*.jpeg'
+      - '*.png'
+      - '*.gif'
+      - '*.webp'
+      - '*.bmp'
     branches:
       - main
 
@@ -22,13 +26,12 @@ jobs:
         python-version: 3.x
 
     - name: ▶️ تنفيذ السكربت
-      run: python imgur/generate_files_json.py
-      working-directory: ./imgur
+      run: python generate_files_json.py
 
     - name: 💾 حفظ التغييرات ودفعها
       run: |
         git config user.name "GitHub Action"
         git config user.email "action@github.com"
-        git add imgur/files.json
-        git commit -m "🔄 تحديث files.json تلقائيًا" || echo "لا يوجد تغييرات"
+        git add files.json
+        git commit -m "🔄 تحديث files.json تلقائيًا"
         git push
