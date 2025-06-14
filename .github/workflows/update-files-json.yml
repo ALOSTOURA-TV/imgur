@@ -1,5 +1,8 @@
 name: تحديث files.json تلقائيًا
 
+permissions:
+  contents: write
+
 on:
   push:
     paths:
@@ -27,12 +30,13 @@ jobs:
 
       - name: ▶️ Run generate_files_json.py
         run: |
+          cd imgur
           python generate_files_json.py
 
       - name: 💾 Commit and push updates
         run: |
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
-          git add files.json
-          git commit -m "🔄 تحديث files.json تلقائيًا" || echo "⚠️ لا يوجد تغييرات"
+          git add imgur/files.json
+          git commit -m "🔄 تحديث files.json تلقائيًا" || echo "no changes to commit"
           git push
