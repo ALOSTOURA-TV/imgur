@@ -1,14 +1,11 @@
 import os
 import json
 
-# المسار الحالي هو imgur
-folder = '.'
-
 allowed_exts = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
 
 files = [
-    f for f in os.listdir(folder)
-    if f.lower().endswith(allowed_exts) and os.path.isfile(os.path.join(folder, f))
+    f for f in os.listdir('.')
+    if f.lower().endswith(allowed_exts) and os.path.isfile(f)
 ]
 
 files.sort()
@@ -16,4 +13,4 @@ files.sort()
 with open('files.json', 'w', encoding='utf-8') as f:
     json.dump(files, f, indent=2, ensure_ascii=False)
 
-print(f"✅ تم إنشاء files.json بنجاح ({len(files)} صورة)")
+print(f"✅ تم تحديث files.json ({len(files)} ملف).")
