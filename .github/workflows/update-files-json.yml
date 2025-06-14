@@ -3,8 +3,7 @@ name: تحديث files.json تلقائيًا
 on:
   push:
     paths:
-  paths:
-  - '**/*'
+      - '**/*'
     branches:
       - main
 
@@ -30,5 +29,5 @@ jobs:
         git config user.name "GitHub Action"
         git config user.email "action@github.com"
         git add imgur/files.json
-        git commit -m "🔄 تحديث files.json تلقائيًا"
+        git commit -m "🔄 تحديث files.json تلقائيًا" || echo "لا يوجد تغييرات"
         git push
