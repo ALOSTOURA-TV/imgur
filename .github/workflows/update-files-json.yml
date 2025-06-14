@@ -3,7 +3,8 @@ name: تحديث files.json تلقائيًا
 on:
   push:
     paths:
-      - 'imgur/**'
+  paths:
+  - '**/*'
     branches:
       - main
 
