@@ -17,29 +17,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 🔄 Checkout repository
-      uses: actions/checkout@v3
+      - name: 🔄 Checkout repository
+        uses: actions/checkout@v3
 
-    - name: 🐍 Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-    - name: 📂 List root files before
-      run: ls -l .
+      - name: ▶️ Run generate_files_json.py
+        run: python generate_files_json.py
 
-    - name: ▶️ Run generate_files_json.py
-      run: |
-        cd imgur
-        python generate_files_json.py
-
-    - name: 📂 List imgur directory after
-      run: ls -l imgur
-
-    - name: 💾 Commit and push updates
-      run: |
-        git config user.name "GitHub Action"
-        git config user.email "action@github.com"
-        git add imgur/files.json
-        git commit -m "🔄 تحديث files.json تلقائيًا" || echo "no changes to commit"
-        git push
+      - name: 💾 Commit and push updates
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add files.json
+          git commit -m "🔄 تحديث files.json تلقائيًا" || echo "no changes to commit"
+          git push
