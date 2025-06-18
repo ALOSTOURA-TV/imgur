@@ -310,19 +310,20 @@
     return str.replace(/[٠-٩]/g, d => englishNumbers[arabicNumbers.indexOf(d)]);
   }
 
-  // تحميل قائمة الصور من files.json
+    // تحميل قائمة الصور من files.json
   async function fetchImages() {
     try {
       const res = await fetch("files.json");
       if (!res.ok) throw new Error("فشل في جلب ملف الصور");
-      const data = await res.json();
-      return data;
-    } catch (err) {
-      console.error(err);
-      gallery.innerHTML = `<div class="loading">حدث خطأ في تحميل الصور.</div>`;
-      return [];
-    }
+    const data = await res.json();
+    // تصفية الملفات لاستبعاد 54DNXLH.png
+    return data.filter(img => img !== "54DNXLH.png");
+  } catch (err) {
+    console.error(err);
+    gallery.innerHTML = `<div class="loading">حدث خطأ في تحميل الصور.</div>`;
+    return [];
   }
+}
 
   // نسخ الرابط للحافظة
   function copyToClipboard(text, btn) {
