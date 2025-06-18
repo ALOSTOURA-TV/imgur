@@ -115,6 +115,8 @@
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.5s ease, transform 0.5s ease, background-color var(--transition-speed);
+    display: flex;
+    flex-direction: column;
   }
   body.light .image-card {
     background-color: var(--card-bg-light);
@@ -132,59 +134,83 @@
     user-select: none;
   }
 
-  .image-info {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.7));
+  .image-footer {
     padding: 8px;
-    color: white;
-    font-size: 13px;
+    background-color: var(--card-bg-dark);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  body.light .image-footer {
+    background-color: var(--card-bg-light);
+  }
+
+  .image-name {
+    font-size: 14px;
+    color: var(--text-dark);
+    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: 0 5px;
   }
-  body.light .image-info {
-    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.7));
-    color: #333;
+  body.light .image-name {
+    color: var(--text-light);
   }
 
   .btn-container {
-  display: flex;
-  justify-content: flex-start;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 5px;
   }
 
- .btn-copy, .btn-download {
-  flex: 1 1 45%;        /* يأخذ كل زر حوالي 45% عرض الحاوية، يسمح باللف */
-  max-width: 100px;     /* حد أقصى لعرض الزر */
-  box-sizing: border-box;
-  background: rgba(0,0,0,0.6);
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  font-size: 13px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  user-select: none;
-  text-align: center;
+  .btn-copy, .btn-download {
+    flex: 1;
+    min-width: 80px;
+    max-width: 120px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: none;
+    font-weight: 500;
   }
-  body.light .btn-copy, body.light .btn-download {
-  background: rgba(255,255,255,0.7);
-  color: #222;
+
+  .btn-copy {
+    background: linear-gradient(135deg, #ff4d4d, #990000);
+    color: white;
+    box-shadow: 0 2px 5px rgba(153, 0, 0, 0.3);
+  }
+
+  .btn-download {
+    background: linear-gradient(135deg, #4da6ff, #0066cc);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 102, 204, 0.3);
   }
 
   .btn-copy:hover {
-  background-color: #990000;
-  color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(153, 0, 0, 0.4);
   }
+
   .btn-download:hover {
-  background-color: #006699;
-  color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 102, 204, 0.4);
   }
 
+  body.light .btn-copy {
+    background: linear-gradient(135deg, #ff8080, #cc0000);
+  }
 
+  body.light .btn-download {
+    background: linear-gradient(135deg, #80b3ff, #004d99);
+  }
 
   .loading {
     grid-column: 1 / -1;
@@ -225,42 +251,40 @@
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
     padding: 0px;
-}
+  }
 
-/* شاشات صغيرة - عرض 4 صور في الصف */
-@media (max-width: 480px) {
+  /* شاشات صغيرة - عرض 4 صور في الصف */
+  @media (max-width: 480px) {
     .gallery-container {
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
         padding: 0px;
     }
-}
+    
+    .btn-copy, .btn-download {
+      min-width: 40px;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+  }
 
-/* شاشات متوسطة - عرض 4 صور في الصف */
-@media (min-width: 481px) and (max-width: 768px) {
+  /* شاشات متوسطة - عرض 4 صور في الصف */
+  @media (min-width: 481px) and (max-width: 768px) {
     .gallery-container {
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
         padding: 0px;
     }
-}
-
-.image-info {
-  display: none !important;
-}
-
-
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>معرض الصور</h1>
   <div style="display: flex; gap: 10px;">
-    
     <button id="toggleThemeBtn" aria-label="تبديل الوضع بين فاتح وغامق" title="تبديل الوضع بين فاتح وغامق" style="font-size: 22px; background: none; border: none; cursor: pointer; color: inherit;">🌙</button>
   </div>
 </header>
-
 
 <main>
   <input type="search" id="searchInput" placeholder="ابحث عن صورة..." aria-label="بحث في الصور" />
@@ -279,6 +303,13 @@
   const scrollTopBtn = document.getElementById("scrollTopBtn");
   let images = [];
 
+  // دالة تحويل الأرقام العربية إلى إنجليزية
+  function convertArabicToEnglish(str) {
+    const arabicNumbers = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    const englishNumbers = ['0','1','2','3','4','5','6','7','8','9'];
+    return str.replace(/[٠-٩]/g, d => englishNumbers[arabicNumbers.indexOf(d)]);
+  }
+
   // تحميل قائمة الصور من files.json
   async function fetchImages() {
     try {
@@ -295,11 +326,13 @@
 
   // نسخ الرابط للحافظة
   function copyToClipboard(text, btn) {
+    const originalText = btn.innerHTML;
     navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = "✅ تم النسخ!";
-      setTimeout(() => (btn.textContent = "📋 نسخ"), 2000);
+      btn.innerHTML = `✅ تم النسخ!`;
+      setTimeout(() => (btn.innerHTML = originalText), 2000);
     }).catch(() => {
-      alert("فشل النسخ. جرب مرة أخرى.");
+      btn.innerHTML = "❌ فشل النسخ";
+      setTimeout(() => (btn.innerHTML = originalText), 2000);
     });
   }
 
@@ -315,55 +348,60 @@
 
   // إنشاء بطاقة الصورة
   function createImageCard(imgName) {
-  const card = document.createElement("div");
-  card.className = "image-card";
+    const card = document.createElement("div");
+    card.className = "image-card";
 
-  const img = document.createElement("img");
-  img.src = baseURL + encodeURIComponent(imgName);
-  img.alt = imgName.replace(/\.[^/.]+$/, "");
-  img.loading = "lazy";
-  card.appendChild(img);
+    const img = document.createElement("img");
+    img.src = baseURL + encodeURIComponent(imgName);
+    img.alt = imgName.replace(/\.[^/.]+$/, "");
+    img.loading = "lazy";
+    card.appendChild(img);
 
-  // حاوية الأزرار
-  const btnContainer = document.createElement("div");
-  btnContainer.className = "btn-container";
-  
+    // تذييل البطاقة (الاسم والأزرار)
+    const footer = document.createElement("div");
+    footer.className = "image-footer";
 
-  const copyBtn = document.createElement("button");
-  copyBtn.className = "btn-copy";
-  copyBtn.textContent = "📋 نسخ";
-  copyBtn.title = "نسخ الرابط المباشر للصورة";
-  copyBtn.onclick = (e) => {
-    e.stopPropagation();
-    copyToClipboard(baseURL + encodeURIComponent(imgName), copyBtn);
-  };
-  btnContainer.appendChild(copyBtn);
+    // اسم الصورة
+    const nameElement = document.createElement("div");
+    nameElement.className = "image-name";
+    nameElement.textContent = imgName.replace(/\.[^/.]+$/, "");
+    footer.appendChild(nameElement);
 
-  const downloadBtn = document.createElement("button");
-  downloadBtn.className = "btn-download";
-  downloadBtn.textContent = "⬇ تحميل";
-  downloadBtn.title = "تحميل الصورة";
-  downloadBtn.onclick = (e) => {
-    e.stopPropagation();
-    downloadImage(baseURL + encodeURIComponent(imgName), imgName);
-  };
-  btnContainer.appendChild(downloadBtn);
+    // حاوية الأزرار
+    const btnContainer = document.createElement("div");
+    btnContainer.className = "btn-container";
 
-  card.appendChild(btnContainer);
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "btn-copy";
+    copyBtn.innerHTML = `📋 نسخ`;
+    copyBtn.onclick = (e) => {
+      e.stopPropagation();
+      copyToClipboard(baseURL + encodeURIComponent(imgName), copyBtn);
+    };
 
-  const info = document.createElement("div");
-  info.className = "image-info";
-  info.textContent = imgName.replace(/\.[^/.]+$/, "");
-  card.appendChild(info);
+    const downloadBtn = document.createElement("button");
+    downloadBtn.className = "btn-download";
+    downloadBtn.innerHTML = `⬇ تحميل`;
+    downloadBtn.onclick = (e) => {
+      e.stopPropagation();
+      downloadImage(baseURL + encodeURIComponent(imgName), imgName);
+    };
 
-  return card;
-}
+    btnContainer.appendChild(copyBtn);
+    btnContainer.appendChild(downloadBtn);
+    footer.appendChild(btnContainer);
+    card.appendChild(footer);
 
+    return card;
+  }
 
   // عرض الصور في المعرض (مع فلتر البحث)
   function renderGallery(filter = "") {
     gallery.innerHTML = "";
-    const filtered = images.filter(name => name.toLowerCase().includes(filter.toLowerCase()));
+    const englishFilter = convertArabicToEnglish(filter); // تحويل الأرقام في البحث
+    const filtered = images.filter(name => 
+      name.toLowerCase().includes(englishFilter.toLowerCase())
+    );
     if (filtered.length === 0) {
       gallery.innerHTML = `<div class="loading">لا توجد صور مطابقة للبحث.</div>`;
       return;
@@ -378,28 +416,27 @@
 
   // التبديل بين الوضع الفاتح والغامق
   function loadTheme() {
-  const theme = localStorage.getItem("theme");
-  if (theme === "light") {
-    document.body.classList.add("light");
-    toggleThemeBtn.textContent = "☀️";
-  } else {
-    document.body.classList.remove("light");
-    toggleThemeBtn.textContent = "🌙";
+    const theme = localStorage.getItem("theme");
+    if (theme === "light") {
+      document.body.classList.add("light");
+      toggleThemeBtn.textContent = "☀️";
+    } else {
+      document.body.classList.remove("light");
+      toggleThemeBtn.textContent = "🌙";
+    }
   }
-}
 
-toggleThemeBtn.onclick = () => {
-  if (document.body.classList.contains("light")) {
-    document.body.classList.remove("light");
-    localStorage.setItem("theme", "dark");
-    toggleThemeBtn.textContent = "🌙";
-  } else {
-    document.body.classList.add("light");
-    localStorage.setItem("theme", "light");
-    toggleThemeBtn.textContent = "☀️";
-  }
-};
-
+  toggleThemeBtn.onclick = () => {
+    if (document.body.classList.contains("light")) {
+      document.body.classList.remove("light");
+      localStorage.setItem("theme", "dark");
+      toggleThemeBtn.textContent = "🌙";
+    } else {
+      document.body.classList.add("light");
+      localStorage.setItem("theme", "light");
+      toggleThemeBtn.textContent = "☀️";
+    }
+  };
 
   // زر الرجوع للأعلى
   window.addEventListener("scroll", () => {
@@ -414,8 +451,14 @@ toggleThemeBtn.onclick = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // البحث في الصور مباشرة عند الكتابة
+  // تطبيق التحويل على حقل البحث عند الكتابة
   searchInput.addEventListener("input", (e) => {
+    const caretPos = e.target.selectionStart;
+    const converted = convertArabicToEnglish(e.target.value);
+    if (e.target.value !== converted) {
+      e.target.value = converted;
+      e.target.setSelectionRange(caretPos, caretPos); // للحفاظ على مكان المؤشر
+    }
     renderGallery(e.target.value.trim());
   });
 
@@ -426,10 +469,8 @@ toggleThemeBtn.onclick = () => {
     renderGallery();
   })();
 })();
-
-
-
 </script>
+
 
 </body>
 </html>
