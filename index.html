@@ -326,7 +326,7 @@
       const data = await res.json();
       return data
         .filter(img => img.name !== "54DNXLH.png")
-        .sort((a, b) => new Date(b.date) - new Date(a.date)); // الأحدث أولاً
+        .sort((a, b) => new Date(b.date) - new Date(a.date)); // ترتيب فقط
     } catch (err) {
       console.error(err);
       gallery.innerHTML = `<div class="loading">حدث خطأ في تحميل الصور.</div>`;
@@ -355,7 +355,7 @@
   }
 
   function createImageCard(image) {
-    const { name, date } = image;
+    const { name } = image;
 
     const card = document.createElement("div");
     card.className = "image-card";
@@ -373,13 +373,6 @@
     nameElement.className = "image-name";
     nameElement.textContent = name.replace(/\.[^/.]+$/, "");
     footer.appendChild(nameElement);
-
-    if (date) {
-      const dateElement = document.createElement("div");
-      dateElement.className = "image-date";
-      dateElement.textContent = date;
-      footer.appendChild(dateElement);
-    }
 
     const btnContainer = document.createElement("div");
     btnContainer.className = "btn-container";
@@ -475,8 +468,6 @@
   })();
 })();
 </script>
-
-
 
 </body>
 </html>
