@@ -14,10 +14,9 @@ for root, dirs, filenames in os.walk('.'):
                 mtime = os.path.getmtime(full_path)
                 files.append({
                     "name": rel_path,
-                    "date": datetime.fromtimestamp(mtime).isoformat()
+                    "date": datetime.fromtimestamp(mtime).strftime("%Y-%m-%dT%H:%M:%S")
                 })
 
-# الترتيب من الأحدث إلى الأقدم
 files.sort(key=lambda x: x["date"], reverse=True)
 
 with open('files.json', 'w', encoding='utf-8') as f:
