@@ -355,64 +355,70 @@
   }
 
   function createImageCard(image) {
-    const { name } = image;
+  const { name } = image;
 
-    const card = document.createElement("div");
-    card.className = "image-card";
+  const card = document.createElement("div");
+  card.className = "image-card";
 
-    const img = document.createElement("img");
-    img.src = baseURL + encodeURIComponent(name);
-    img.alt = name.replace(/\.[^/.]+$/, "");
-    img.loading = "lazy";
-    card.appendChild(img);
+  const img = document.createElement("img");
+  img.src = baseURL + encodeURIComponent(name);
+  img.alt = name.replace(/\.[^/.]+$/, "");
+  img.loading = "lazy";
+  card.appendChild(img);
 
-    const footer = document.createElement("div");
-    footer.className = "image-footer";
+  const footer = document.createElement("div");
+  footer.className = "image-footer";
 
-    // اسم الصورة بدون الامتداد
-    const nameElement = document.createElement("div");
-    nameElement.className = "image-name";
-    nameElement.textContent = name.replace(/\.[^/.]+$/, "");
-    footer.appendChild(nameElement);
+  // اسم الصورة (بدون الامتداد)
+  const nameElement = document.createElement("div");
+  nameElement.className = "image-name";
+  nameElement.textContent = name.split("/").pop().replace(/\.[^/.]+$/, "");
+  footer.appendChild(nameElement);
 
-    // موقع الصورة
-    const locationElement = document.createElement("div");
-    locationElement.className = "image-name";
-    if (name.includes("/")) {
-      const folder = name.split("/")[0];
-      locationElement.textContent = "📂 " + folder;
-    } else {
-      locationElement.textContent = "📂 الجذر";
-    }
-    footer.appendChild(locationElement);
-
-    // الأزرار
-    const btnContainer = document.createElement("div");
-    btnContainer.className = "btn-container";
-
-    const copyBtn = document.createElement("button");
-    copyBtn.className = "btn-copy";
-    copyBtn.innerHTML = `📋 نسخ الرابط`;
-    copyBtn.onclick = (e) => {
-      e.stopPropagation();
-      copyToClipboard(baseURL + encodeURIComponent(name), copyBtn);
-    };
-
-    const downloadBtn = document.createElement("button");
-    downloadBtn.className = "btn-download";
-    downloadBtn.innerHTML = `⬇ تحميل`;
-    downloadBtn.onclick = (e) => {
-      e.stopPropagation();
-      downloadImage(baseURL + encodeURIComponent(name), name);
-    };
-
-    btnContainer.appendChild(copyBtn);
-    btnContainer.appendChild(downloadBtn);
-    footer.appendChild(btnContainer);
-
-    card.appendChild(footer);
-    return card;
+  // اسم المجلد الفرعي إن وجد
+  const parts = name.split("/");
+  if (parts.length > 2) {
+    const subFolder = document.createElement("div");
+    subFolder.className = "image-name";
+    subFolder.textContent = parts[parts.length - 2];
+    footer.appendChild(subFolder);
   }
+
+  // 📂 Upload أو 📂 الجذر
+  const rootFolder = document.createElement("div");
+  rootFolder.className = "image-name";
+  rootFolder.textContent = parts.length > 1 ? "📂 " + parts[0] : "📂 الجذر";
+  footer.appendChild(rootFolder);
+
+  // الأزرار
+  const btnContainer = document.createElement("div");
+  btnContainer.className = "btn-container";
+
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "btn-copy";
+  copyBtn.innerHTML = `📋 نسخ الرابط`;
+  copyBtn.onclick = (e) => {
+    e.stopPropagation();
+    copyToClipboard(baseURL + encodeURIComponent(name), copyBtn);
+  };
+
+  const downloadBtn = document.createElement("button");
+  downloadBtn.className = "btn-download";
+  downloadBtn.innerHTML = `⬇ تحميل`;
+  downloadBtn.onclick = (e) => {
+    e.stopPropagation();
+    downloadImage(baseURL + encodeURIComponent(name), name);
+  };
+
+  btnContainer.appendChild(copyBtn);
+  btnContainer.appendChild(downloadBtn);
+  footer.appendChild(btnContainer);
+
+  card.appendChild(footer);
+
+  return card;
+}
+
 
   function renderGallery(filter = "") {
     gallery.innerHTML = "";
