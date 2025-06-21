@@ -326,7 +326,7 @@
       const data = await res.json();
       return data
         .filter(img => img.name !== "54DNXLH.png")
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
+        .sort((a, b) => new Date(b.date) - new Date(a.date)); // ترتيب فقط
     } catch (err) {
       console.error(err);
       gallery.innerHTML = `<div class="loading">حدث خطأ في تحميل الصور.</div>`;
@@ -355,60 +355,62 @@
   }
 
   function createImageCard(image) {
-    const { name } = image;
-    const card = document.createElement("div");
-    card.className = "image-card";
+  const { name } = image;
 
-    // صورة
-    const img = document.createElement("img");
-    img.src = baseURL + encodeURIComponent(name);
-    img.alt = name;
-    img.loading = "lazy";
-    card.appendChild(img);
+  const card = document.createElement("div");
+  card.className = "image-card";
 
-    // تذييل البطاقة
-    const footer = document.createElement("div");
-    footer.className = "image-footer";
+  // ✅ الصورة
+  const img = document.createElement("img");
+  img.src = baseURL + encodeURIComponent(name);
+  img.alt = name.replace(/\.[^/.]+$/, "");
+  img.loading = "lazy";
+  card.appendChild(img);
 
-    // اسم الصورة بدون امتداد
-    const nameElement = document.createElement("div");
-    nameElement.className = "image-name";
-    nameElement.textContent = name.replace(/\.[^/.]+$/, "");
-    footer.appendChild(nameElement);
+  // 🏷️ اسم الصورة (بدون الامتداد)
+  const nameElement = document.createElement("div");
+  nameElement.className = "image-name";
+  nameElement.textContent = name.replace(/\.[^/.]+$/, "");
+  card.appendChild(nameElement);
 
-    // مكان الصورة 📂 الجذر أو Upload
-    const locationElement = document.createElement("div");
-    locationElement.className = "image-location";
-    locationElement.textContent = name.startsWith("upload/") ? "📂 Upload" : "📂 الجذر";
-    footer.appendChild(locationElement);
-
-    // أزرار
-    const btnContainer = document.createElement("div");
-    btnContainer.className = "btn-container";
-
-    const copyBtn = document.createElement("button");
-    copyBtn.className = "btn-copy";
-    copyBtn.innerHTML = `📋 نسخ الرابط`;
-    copyBtn.onclick = (e) => {
-      e.stopPropagation();
-      copyToClipboard(baseURL + encodeURIComponent(name), copyBtn);
-    };
-
-    const downloadBtn = document.createElement("button");
-    downloadBtn.className = "btn-download";
-    downloadBtn.innerHTML = `⬇ تحميل`;
-    downloadBtn.onclick = (e) => {
-      e.stopPropagation();
-      downloadImage(baseURL + encodeURIComponent(name), name);
-    };
-
-    btnContainer.appendChild(copyBtn);
-    btnContainer.appendChild(downloadBtn);
-    footer.appendChild(btnContainer);
-
-    card.appendChild(footer);
-    return card;
+  // 📂 موقع الصورة
+  const locationElement = document.createElement("div");
+  locationElement.className = "image-location";
+  if (name.includes("/")) {
+    const folderPath = name.substring(0, name.lastIndexOf("/"));
+    locationElement.textContent = "📂 " + folderPath;
+  } else {
+    locationElement.textContent = "📂 الجذر";
   }
+  card.appendChild(locationElement);
+
+  // 📋 ⬇ الأزرار
+  const btnContainer = document.createElement("div");
+  btnContainer.className = "btn-container";
+
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "btn-copy";
+  copyBtn.innerHTML = `📋 نسخ الرابط`;
+  copyBtn.onclick = (e) => {
+    e.stopPropagation();
+    copyToClipboard(baseURL + encodeURIComponent(name), copyBtn);
+  };
+
+  const downloadBtn = document.createElement("button");
+  downloadBtn.className = "btn-download";
+  downloadBtn.innerHTML = `⬇ تحميل`;
+  downloadBtn.onclick = (e) => {
+    e.stopPropagation();
+    downloadImage(baseURL + encodeURIComponent(name), name);
+  };
+
+  btnContainer.appendChild(copyBtn);
+  btnContainer.appendChild(downloadBtn);
+  card.appendChild(btnContainer);
+
+  return card;
+}
+
 
   function renderGallery(filter = "") {
     gallery.innerHTML = "";
@@ -477,6 +479,7 @@
   })();
 })();
 </script>
+
 
 
 </body>
