@@ -1,55 +1,40 @@
-name: Generate files.json with image dates
+- name: Run Python script
+  run: |
+    python <<EOF
+    import os
+    import json
+    import subprocess
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+    allowed_exts = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
+    files = []
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+    def get_git_date(path):
+        try:
+            result = subprocess.run(
+                ['git', 'log', '-1', '--format=%cd', '--date=format:%Y-%m-%d(%p %I:%M:%S)', path],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True
+            )
+            return result.stdout.strip()
+        except:
+            return ""
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    for root, dirs, filenames in os.walk('.'):
+        for f in filenames:
+            if f.lower().endswith(allowed_exts):
+                full_path = os.path.join(root, f)
+                if os.path.isfile(full_path):
+                    rel_path = os.path.relpath(full_path, '.')
+                    date = get_git_date(rel_path)
+                    files.append({
+                        "name": rel_path,
+                        "date": date
+                    })
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+    files = [f for f in files if f["date"]]  # استبعاد الملفات بدون تاريخ
+    files.sort(key=lambda x: x["date"], reverse=True)
 
-      - name: Run Python script
-        run: |
-          python <<EOF
-          import os
-          import json
-          from datetime import datetime
-
-          allowed_exts = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
-          files = []
-
-          for root, dirs, filenames in os.walk('.'):
-              for f in filenames:
-                  if f.lower().endswith(allowed_exts):
-                      full_path = os.path.join(root, f)
-                      if os.path.isfile(full_path):
-                          rel_path = os.path.relpath(full_path, '.')
-                          mtime = os.path.getmtime(full_path)
-                          formatted_date = datetime.fromtimestamp(mtime).strftime("%Y-%m-%d(%p %I:%M:%S)")
-                          files.append({
-                              "name": rel_path,
-                              "date": formatted_date
-                          })
-
-          files.sort(key=lambda x: x["date"], reverse=True)
-
-          with open('files.json', 'w', encoding='utf-8') as f:
-              json.dump(files, f, indent=2, ensure_ascii=False)
-          EOF
-
-      - name: Commit and push
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "🔄 Update files.json with image metadata"
-          branch: main
-          file_pattern: files.json
+    with open('files.json', 'w', encoding='utf-8') as f:
+        json.dump(files, f, indent=2, ensure_ascii=False)
+    EOF
