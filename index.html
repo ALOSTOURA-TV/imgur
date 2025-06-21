@@ -286,6 +286,10 @@
         padding: 0px;
     }
   }
+  .image-name:first-child {
+  font-weight: bold;
+}
+
 </style>
 </head>
 <body>
@@ -396,7 +400,7 @@
 
   const copyBtn = document.createElement("button");
   copyBtn.className = "btn-copy";
-  copyBtn.innerHTML = `📋 نسخ الرابط`;
+  copyBtn.innerHTML = `📋 نسخ `;
   copyBtn.onclick = (e) => {
     e.stopPropagation();
     copyToClipboard(baseURL + encodeURIComponent(name), copyBtn);
@@ -404,7 +408,7 @@
 
   const downloadBtn = document.createElement("button");
   downloadBtn.className = "btn-download";
-  downloadBtn.innerHTML = `⬇ تحميل`;
+  downloadBtn.innerHTML = `📥 تحميل`;
   downloadBtn.onclick = (e) => {
     e.stopPropagation();
     downloadImage(baseURL + encodeURIComponent(name), name);
@@ -487,6 +491,5 @@
   })();
 })();
 </script>
-
 </body>
 </html>
