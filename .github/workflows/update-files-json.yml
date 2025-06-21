@@ -35,9 +35,10 @@ jobs:
                       if os.path.isfile(full_path):
                           rel_path = os.path.relpath(full_path, '.')
                           mtime = os.path.getmtime(full_path)
+                          formatted_date = datetime.fromtimestamp(mtime).strftime("%Y-%m-%d(%p %I:%M:%S)")
                           files.append({
                               "name": rel_path,
-                              "date": datetime.fromtimestamp(mtime).strftime("%Y-%m-%dT%H:%M:%S")
+                              "date": formatted_date
                           })
 
           files.sort(key=lambda x: x["date"], reverse=True)
