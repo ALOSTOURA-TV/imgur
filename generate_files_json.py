@@ -3,11 +3,17 @@ import json
 
 allowed_exts = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
 
-files = [
-    f for f in os.listdir('.')
-    if f.lower().endswith(allowed_exts) and os.path.isfile(f)
-]
+# البحث في كل المجلدات الفرعية
+files = []
+for root, dirs, filenames in os.walk('.'):
+    for f in filenames:
+        if f.lower().endswith(allowed_exts):
+            full_path = os.path.join(root, f)
+            # إزالة .\ من البداية للحصول على مسار نسبي
+            rel_path = os.path.relpath(full_path, '.')
+            files.append(rel_path)
 
+# الترتيب حسب آخر تعديل (الأحدث أولاً)
 files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
 
 with open('files.json', 'w', encoding='utf-8') as f:
