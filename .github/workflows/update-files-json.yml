@@ -1,25 +1,54 @@
-name: Update files.json with image files
+name: Generate files.json with image dates
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  update-files-json:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Find image files and update files.json
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run Python script
         run: |
-          find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) \
-            | sed 's|^\./||' \
-            | jq -R . | jq -s . > files.json
+          python <<EOF
+          import os
+          import json
+          from datetime import datetime
 
-      - name: Commit and push changes
+          allowed_exts = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
+          files = []
+
+          for root, dirs, filenames in os.walk('.'):
+              for f in filenames:
+                  if f.lower().endswith(allowed_exts):
+                      full_path = os.path.join(root, f)
+                      if os.path.isfile(full_path):
+                          rel_path = os.path.relpath(full_path, '.')
+                          mtime = os.path.getmtime(full_path)
+                          files.append({
+                              "name": rel_path,
+                              "date": datetime.fromtimestamp(mtime).strftime("%Y-%m-%dT%H:%M:%S")
+                          })
+
+          files.sort(key=lambda x: x["date"], reverse=True)
+
+          with open('files.json', 'w', encoding='utf-8') as f:
+              json.dump(files, f, indent=2, ensure_ascii=False)
+          EOF
+
+      - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Update files.json with image files list
+          commit_message: "🔄 Update files.json with image metadata"
           branch: main
           file_pattern: files.json
