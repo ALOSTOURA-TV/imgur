@@ -24,13 +24,12 @@ for root, dirs, filenames in os.walk('.'):
             if os.path.isfile(full_path):
                 rel_path = os.path.relpath(full_path, '.')
                 date = get_git_date(rel_path)
-                if date:  # تأكد أن التاريخ موجود فعليًا
+                if date:
                     files.append({
                         "name": rel_path,
                         "date": date
                     })
 
-# الترتيب من الأحدث إلى الأقدم
 files.sort(key=lambda x: x["date"], reverse=True)
 
 with open('files.json', 'w', encoding='utf-8') as f:
