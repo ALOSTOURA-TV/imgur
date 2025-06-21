@@ -1,41 +1,71 @@
-- name: Run Python script
-  run: |
-    python <<EOF
-    import os
-    import json
-    import subprocess
+name: Generate files.json with image dates
 
-    allowed_exts = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
-    files = []
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
-    def get_git_date(path):
-        try:
-            result = subprocess.run(
-                ['git', 'log', '--diff-filter=A', '--follow', '--format=%cd', '--date=format:%Y-%m-%d(%p %I:%M:%S)', path],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                text=True
-            )
-            # أول سطر = أول رفع
-            return result.stdout.splitlines()[0] if result.stdout else ""
-        except:
-            return ""
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    for root, dirs, filenames in os.walk('.'):
-        for f in filenames:
-            if f.lower().endswith(allowed_exts):
-                full_path = os.path.join(root, f)
-                if os.path.isfile(full_path):
-                    rel_path = os.path.relpath(full_path, '.')
-                    date = get_git_date(rel_path)
-                    files.append({
-                        "name": rel_path,
-                        "date": date
-                    })
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # ضروري للحصول على سجل git كامل
 
-    files = [f for f in files if f["date"]]  # استبعاد الملفات بدون تاريخ
-    files.sort(key=lambda x: x["date"], reverse=True)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-    with open('files.json', 'w', encoding='utf-8') as f:
-        json.dump(files, f, indent=2, ensure_ascii=False)
-    EOF
+      - name: Generate files.json with git creation dates
+        run: |
+          python <<EOF
+          import os
+          import json
+          import subprocess
+
+          allowed_exts = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
+          files = []
+
+          def get_git_date(path):
+              try:
+                  result = subprocess.run(
+                      ['git', 'log', '--diff-filter=A', '--follow', '--format=%cd', '--date=format:%Y-%m-%d(%p %I:%M:%S)', path],
+                      stdout=subprocess.PIPE,
+                      stderr=subprocess.DEVNULL,
+                      text=True
+                  )
+                  return result.stdout.splitlines()[0] if result.stdout else ""
+              except:
+                  return ""
+
+          for root, dirs, filenames in os.walk('.'):
+              for f in filenames:
+                  if f.lower().endswith(allowed_exts):
+                      full_path = os.path.join(root, f)
+                      if os.path.isfile(full_path):
+                          rel_path = os.path.relpath(full_path, '.')
+                          date = get_git_date(rel_path)
+                          if date:
+                              files.append({
+                                  "name": rel_path,
+                                  "date": date
+                              })
+
+          files.sort(key=lambda x: x["date"], reverse=True)
+
+          with open('files.json', 'w', encoding='utf-8') as f:
+              json.dump(files, f, indent=2, ensure_ascii=False)
+
+          print(f"✅ تم تحديث files.json ({len(files)} ملف).")
+          EOF
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🔄 Update files.json with image metadata"
+          branch: main
+          file_pattern: files.json
