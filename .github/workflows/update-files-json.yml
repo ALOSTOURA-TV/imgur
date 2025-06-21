@@ -9,17 +9,17 @@
     files = []
 
     def get_git_date(path):
-    try:
-        result = subprocess.run(
-            ['git', 'log', '--diff-filter=A', '--follow', '--format=%cd', '--date=format:%Y-%m-%d(%p %I:%M:%S)', path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True
-        )
-        # أول سطر = أول رفع
-        return result.stdout.splitlines()[0] if result.stdout else ""
-    except:
-        return ""
+        try:
+            result = subprocess.run(
+                ['git', 'log', '--diff-filter=A', '--follow', '--format=%cd', '--date=format:%Y-%m-%d(%p %I:%M:%S)', path],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True
+            )
+            # أول سطر = أول رفع
+            return result.stdout.splitlines()[0] if result.stdout else ""
+        except:
+            return ""
 
     for root, dirs, filenames in os.walk('.'):
         for f in filenames:
