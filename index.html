@@ -326,7 +326,7 @@
       const data = await res.json();
       return data
         .filter(img => img.name !== "54DNXLH.png")
-        .sort((a, b) => new Date(b.date) - new Date(a.date)); // ترتيب فقط
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
     } catch (err) {
       console.error(err);
       gallery.innerHTML = `<div class="loading">حدث خطأ في تحميل الصور.</div>`;
@@ -356,30 +356,39 @@
 
   function createImageCard(image) {
     const { name } = image;
-
     const card = document.createElement("div");
     card.className = "image-card";
 
+    // صورة
     const img = document.createElement("img");
     img.src = baseURL + encodeURIComponent(name);
-    img.alt = name.replace(/\.[^/.]+$/, "");
+    img.alt = name;
     img.loading = "lazy";
     card.appendChild(img);
 
+    // تذييل البطاقة
     const footer = document.createElement("div");
     footer.className = "image-footer";
 
+    // اسم الصورة بدون امتداد
     const nameElement = document.createElement("div");
     nameElement.className = "image-name";
     nameElement.textContent = name.replace(/\.[^/.]+$/, "");
     footer.appendChild(nameElement);
 
+    // مكان الصورة 📂 الجذر أو Upload
+    const locationElement = document.createElement("div");
+    locationElement.className = "image-location";
+    locationElement.textContent = name.startsWith("upload/") ? "📂 Upload" : "📂 الجذر";
+    footer.appendChild(locationElement);
+
+    // أزرار
     const btnContainer = document.createElement("div");
     btnContainer.className = "btn-container";
 
     const copyBtn = document.createElement("button");
     copyBtn.className = "btn-copy";
-    copyBtn.innerHTML = `📋 نسخ`;
+    copyBtn.innerHTML = `📋 نسخ الرابط`;
     copyBtn.onclick = (e) => {
       e.stopPropagation();
       copyToClipboard(baseURL + encodeURIComponent(name), copyBtn);
@@ -396,8 +405,8 @@
     btnContainer.appendChild(copyBtn);
     btnContainer.appendChild(downloadBtn);
     footer.appendChild(btnContainer);
-    card.appendChild(footer);
 
+    card.appendChild(footer);
     return card;
   }
 
@@ -468,6 +477,7 @@
   })();
 })();
 </script>
+
 
 </body>
 </html>
