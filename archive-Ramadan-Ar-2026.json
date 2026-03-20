@@ -1,0 +1,5 @@
+{
+  "baseUrl": "https://archive.org/download/",
+  "fallbackVideoUrl": "https://i.imgur.com/sQpkvIx.mp4",
+  "fallbackVideoKey": "fallback-video-Ramadan-v1"
+}
